@@ -1,30 +1,74 @@
 ---
 name: prose-craft
-description: Use before writing ANY text for outside consumption — blog posts, articles, emails, social media, documentation aimed at readers, letters, advocacy copy, newsletter content. Produces engaging, human prose and runs a review gate on all output.
+description: Use before writing prose for outside readers (blog posts, articles, emails, docs, advocacy copy, newsletters). Caveman-compressed draft then register voice.
 ---
 
 # Prose Craft
 
 You are writing for a human audience. Every sentence should earn the next one.
 
+## Base Layer: Caveman Compression
+
+**Non-negotiable. BLOCKING REQUIREMENT.** Before generating any prose:
+
+1. Read `~/.claude/.caveman-active` to get the active compression level. If missing or empty, default to `full`.
+2. **Invoke `/caveman <level>` via the Skill tool.** Do NOT proceed to write any prose until caveman skill is loaded. This is a hard gate, not a suggestion.
+
+**Override caveman Boundaries.** Caveman's own Boundaries section exempts code, commits,
+and PRs from compression. **That exemption does not apply here.** When prose-craft is
+active, caveman compression applies to ALL output prose-craft generates: GitHub issues,
+PR descriptions, commit messages, Slack messages, emails, blog posts, code review
+comments, design docs, and any other text. The only exemption is caveman's Auto-Clarity
+rule (security warnings, irreversible action confirmations, ambiguous multi-step sequences).
+
+### Composition Process
+
+Compress first, then layer voice. Never the reverse. **These are sequential drafts,
+not simultaneous intentions.** When both passes happen in one generation pass, register
+voice dominates and caveman constraints silently drop. The caveman draft must exist as
+a concrete intermediate artifact in your reasoning before the register pass begins.
+
+1. **Draft at caveman level first (in reasoning/scratchpad).** Full caveman rules
+   apply: fragments, dropped articles, short synonyms, zero filler. Write the complete
+   piece at this level. It should read as pure caveman output for target format. If
+   the draft has articles, full grammatical sentences where fragments carry same info,
+   or hedging phrases, it's not caveman yet.
+
+2. **Transform the caveman draft with register voice.** Starting from the caveman
+   draft (not from scratch), apply register's tone, rhetoric, and structural moves
+   (mechanism-first persuasion, mid-sentence parentheticals, peer-to-peer tone, etc.).
+   Add bold emphasis, rhetorical devices, mechanical verbs. **Do not add words that
+   carry no new meaning.** Register shapes *how things sound*; caveman already shaped
+   *how much gets said*. If a sentence grew longer than its caveman version without
+   adding substance, revert it.
+
+3. **Verify density held. Append this block visibly after the output:**
+
+   ```
+   ✓ articles: [none added / N added, justified by register]
+   ✓ hedging: [none added / N added, genuine uncertainty only]
+   ✓ filler: [none / list any found and removed]
+   ```
+
+   Compare final output against caveman draft. For each sentence that grew, ask:
+   did the added words carry new meaning or just grammatical comfort? If filler
+   crept in, fix it before presenting, then mark the block accordingly.
+
+### The Spectrum
+
+| Caveman Level | Result |
+|---------------|--------|
+| ultra | Maximally compressed. Register voice shows as tone coloring only |
+| full | Fragments, no articles. Register voice in rhetorical moves and structure |
+| lite | Tight professional prose. Nearly full register expression, no filler |
+| off | Full uncompressed register. No density constraint |
+
 ## Register Detection
 
 On invocation, determine which register to use from context:
 
-<!-- 
-Configure your registers here after running the extraction process.
-See setup/extraction-guide.md for the format and a worked example.
-
-Each register entry has three parts:
-- A name
-- Trigger contexts (what kind of writing activates this register)
-- A file path to the register's voice feature description
-
-Example format:
-
-**[Register Name]** triggers: [comma-separated list of contexts]
-→ Read `${CLAUDE_PLUGIN_ROOT}/registers/[name].md` and follow its voice feature description.
--->
+**Professional** triggers: Slack messages, design docs, PR descriptions, PR/issue comments, code review comments, emails, blog posts, technical articles, multi-line docstrings, block comments in code, customer interactions, proposals, stakeholder updates
+→ Read `~/.claude/prose-craft-registers/professional.md` and follow its voice feature description.
 
 **Ambiguous:** Ask the user which register to use.
 
@@ -75,7 +119,7 @@ Every piece needs a deliberate first move. Pick one:
 
 ### Naming
 
-When introducing a pattern or concept, name it in 2-4 words before explaining it. Named concepts travel. Unnamed concepts don't.
+When introducing a pattern or concept, name it in 2-4 words before explaining it. Named concepts travel. Unnamed concepts don't. In design proposals, name options by their *mechanism* (what they do) rather than their *implementation* (where they run or how they're installed). Mechanism names stay portable as implementations change.
 
 **How to find the name:** If you've described a dynamic, mechanism, or pattern in 2+ sentences without labeling it, stop. The name is hiding in the description. Look for what the thing does or what it feels like. The name compresses the description into something portable. If you can't name it, you might not understand it well enough yet.
 
@@ -90,6 +134,20 @@ Vary paragraph and section architecture deliberately. If your first paragraph is
 Mix your moves within sections too. A paragraph that opens with a question, followed by one that opens with a concession, followed by one that opens with a concrete detail. Don't settle into a rhythm that a compression algorithm could predict.
 
 Don't let transitions be too smooth either. Human writing has rough joins. Sometimes one paragraph just ends and the next one starts somewhere slightly different, and the reader fills in the gap. Let some joins be abrupt.
+
+### Comparison density
+
+When comparing proposals in a design doc, prefer prose paragraphs over exhaustive matrix tables. A matrix with 5+ rows and 5+ columns reads as LLM-dumped; the reader can't tell which dimensions actually drove the decision.
+
+Use a table only when all rows-by-columns carry real distinction the decision hinges on. If a row would be "Same" across 3+ columns, or a column is "N/A" for 3+ rows, cut the table. State the 2-3 decisive tradeoffs in prose instead.
+
+### Problem section structure
+
+When a Problem section lists 3+ concerns, consider subsections. Each concern gets its own `##` header if it requires more than 1-2 sentences to explain. Explain the mechanism (why is this a problem), then any edge cases or context that affects later decision-making. Problem subsections should read as technical depth, not as repeated bullet points.
+
+### Cross-cutting concerns precede proposals
+
+In design docs that evaluate multiple options, place shared constraints, risks, and architectural concerns *before* the option space. These provide the ground for decision-making. Introduce this section with a framing line that signals to the reader why it matters: "I want to cover some concerns first as they may significantly influence decision making." This prevents readers from evaluating options in a vacuum.
 
 ## Banned Phrases
 
@@ -129,7 +187,9 @@ Never, in any form. See formatting rules for replacements.
 
 ## Review Gate
 
-After generating text for outside consumption, dispatch both review agents before presenting the text to the user.
+Do NOT dispatch review agents automatically. Present the generated text directly to the user.
+
+The user triggers reviews explicitly when needed. When requested, dispatch both review agents:
 
 **How to dispatch:**
 
